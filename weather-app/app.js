@@ -1,12 +1,26 @@
 const forecast = require('./utils/forecast');
 const geocode = require('./utils/geocode');
 
-geocode('boston', (error, data) => {
-    console.log('Error:', error);
-    console.log('Data:', data);
-});
+// Get location name from command line argument. Ignore the first two arguments.
+const locationName = process.argv.slice(2)[0];
 
-forecast(44.1545,-75.7088, (error, data) => {
-    console.log('Error', error)
-    console.log('Data', data)
-})
+// Only geocode location if a location was provided.
+if (!locationName) {
+    console.log('Please provide a location');
+} else {
+    // Call geocode function to get location information.
+    geocode(locationName, (error, locationData) => {
+        if (error) {
+            return console.log(error);
+        }
+        // Call forecast function to get weather information for specified location using data returned from geocode callback.
+        forecast(locationData.latitude, locationData.longitude, (error, weatherData) => {
+            if (error) {
+                return console.log(error);
+            }
+
+            console.log(locationData.location);
+            console.log(weatherData);
+        });
+    });
+}
