@@ -1,7 +1,7 @@
 const forecast = require('./utils/forecast');
 const geocode = require('./utils/geocode');
 
-// Get location name from command line argument. Ignore the first two arguments.
+// Get location name from command line argument. Get the third argument.
 const address = process.argv[2];
 
 // Only geocode location if a location was provided.
