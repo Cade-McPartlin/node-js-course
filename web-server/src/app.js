@@ -1,15 +1,23 @@
 const path = require('path');
 const express = require('express');
+const hbs = require('hbs');
 
 const app = express();
+
+// Define paths for Express config.
 const publicDirectoryPath = path.join(__dirname, '../public');
+const viewsPath = path.join(__dirname, '../templates/views');
+const partialsPath = path.join(__dirname, '../templates/partials');
 
-// Tell express which templating engine we are using.
+// Setup handlebars engine and views location.
 app.set('view engine', 'hbs');
+app.set('views', viewsPath);
+hbs.registerPartials(partialsPath);
 
+// Setup static directory to serve.
 app.use(express.static(publicDirectoryPath));
 
-// Create route for root of server
+// Create route for root of server.
 app.get('', (req, res) => {
     // render index template in views dir
     res.render('index', {
@@ -18,28 +26,29 @@ app.get('', (req, res) => {
     });
 });
 
-// Create route for about page
+// Create route for about page.
 app.get('/about', (req, res) => {
-   res.render('about', {
+    res.render('about', {
         title: 'About Me',
         name: 'Cade McPartlin'
-   });
-});
-
-// Create route for help page
-app.get('/help', (req, res) => {
-    res.render('help', {
-       title: 'Help Page',
-       message: 'This is some helpful text.'
     });
 });
 
-// Create route for weather page
+// Create route for help page.
+app.get('/help', (req, res) => {
+    res.render('help', {
+        title: 'Help',
+        name: 'Cade McPartlin',
+        message: 'This is some helpful text.'
+    });
+});
+
+// Create route for weather page.
 app.get('/weather', (req, res) => {
-   res.send({
-       forecast: 'It is 5 degrees.',
-       location: 'Brookfield'
-   });
+    res.send({
+        forecast: 'It is 5 degrees.',
+        location: 'Brookfield'
+    });
 });
 
 app.listen(3000, () => {
