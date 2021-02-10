@@ -51,6 +51,24 @@ app.get('/weather', (req, res) => {
     });
 });
 
+// Create route for any page that is after /help/ and does not have a route.
+app.get('/help/*', (req, res) => {
+    res.render('404', {
+        title: '404',
+        name: 'Cade McPartlin',
+        errorMessage: 'Help article not found.',
+    });
+});
+
+// Create route for any other page that does not have a route defined.
+app.get('*', (req, res) => {
+    res.render('404', {
+        title: '404',
+        name: 'Cade McPartlin',
+        errorMessage: 'Page not found.'
+    });
+});
+
 app.listen(3000, () => {
     console.log('Server is up on port 3000');
 });
