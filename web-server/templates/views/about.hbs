@@ -3,13 +3,17 @@
     <head>
         <meta charset="UTF-8">
         <title>About</title>
+        <link rel="icon" href="/img/weather.png">
         <link rel="stylesheet" href="/css/styles.css">
     </head>
 
     <body>
-        <!--The header partial-->
-        {{>header}}
-        <img src="/img/me.jpeg">
+        <div class="main-content">
+            <!--The header partial-->
+            {{>header}}
+            <img src="/img/me.jpeg" class="portrait">
+        </div>
+
         <!--The footer partial-->
         {{>footer}}
     </body>

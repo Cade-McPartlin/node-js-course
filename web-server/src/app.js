@@ -21,7 +21,7 @@ app.use(express.static(publicDirectoryPath));
 app.get('', (req, res) => {
     // render index template in views dir
     res.render('index', {
-        title: 'Weather App',
+        title: 'Weather',
         name: 'Cade McPartlin'
     });
 });
@@ -56,7 +56,7 @@ app.get('/help/*', (req, res) => {
     res.render('404', {
         title: '404',
         name: 'Cade McPartlin',
-        errorMessage: 'Help article not found.',
+        errorMessage: 'Help article not found.'
     });
 });
 
