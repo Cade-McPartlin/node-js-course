@@ -1,6 +1,8 @@
 const path = require('path');
 const express = require('express');
 const hbs = require('hbs');
+const forecast = require('./utils/forecast');
+const geocode = require('./utils/geocode');
 
 const app = express();
 
@@ -45,9 +47,37 @@ app.get('/help', (req, res) => {
 
 // Create route for weather page.
 app.get('/weather', (req, res) => {
-    res.send({
-        forecast: 'It is 5 degrees.',
-        location: 'Brookfield'
+    // Get data from query string via req.query.
+    // Check for required address query parameter.
+    if (!req.query.address) {
+        return res.send({
+            error: 'You must provide an address'
+        });
+    }
+
+    // Call geocode function to get location information.
+    geocode(req.query.address, (error, { latitude, longitude, location } = {}) => {
+        if (error) {
+            return res.send({
+                error: error
+            });
+        }
+
+        // Call forecast function to get weather information for specified location using latitude and longitude
+        // returned from geocode callback.
+        forecast(latitude, longitude, (error, forecastData) => {
+            if (error) {
+                return res.send({
+                    error: error
+                });
+            }
+
+            res.send({
+                forecast: forecastData,
+                location: location,
+                address: req.query.address
+            });
+        });
     });
 });
 
