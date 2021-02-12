@@ -8,6 +8,9 @@ weatherForm.addEventListener('submit', (e) => {
 
     const location = search.value;
 
+    message1.textContent = 'Loading...';
+    message2.textContent = '';
+
     const url = 'http://localhost:3000/weather?address=' + location;
 
     // Fetch request to weather endpoint that we created to get the location and forecast.
