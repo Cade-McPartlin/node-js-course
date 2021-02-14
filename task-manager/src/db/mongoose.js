@@ -16,15 +16,37 @@ const User = mongoose.model('User', {
     }
 });
 
-// Create new instance of User model.
-const me = new User({
-   name: 'Cade',
-   age: 'Mike'
+// Create Task model.
+const Task = mongoose.model('Task', {
+    description: {
+        type: String
+    },
+    completed: {
+        type: Boolean
+    }
 });
 
+// Create new instance of User model.
+// const me = new User({
+//    name: 'Cade',
+//    age: 'Mike'
+// });
+
 // Save instance of me to MongoDB, returns promise.
-me.save().then(() => {
-    console.log(me);
+// me.save().then(() => {
+//     console.log(me);
+// }).catch((error) => {
+//     console.log('Error!', error);
+// });
+
+// Create instance of Task model.
+const cleanHouse = new Task({
+    description: 'Clean the house',
+    completed: false
+});
+
+cleanHouse.save().then(() => {
+    console.log(cleanHouse);
 }).catch((error) => {
-    console.log('Error!', error);
+   console.log(error);
 });
