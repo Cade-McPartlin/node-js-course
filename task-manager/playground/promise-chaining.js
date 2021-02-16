@@ -1,0 +1,12 @@
+require('../src/db/mongoose');
+const User = require('../src/models/user');
+
+User.findByIdAndUpdate('6029a0a906c8e28e3e2ef5b6', { age: 1 }).then((user) => {
+    console.log(user);
+
+    return User.countDocuments({ age: 1 });
+}).then((result) => {
+    console.log(result);
+}).catch((e) => {
+    console.log(e);
+});
