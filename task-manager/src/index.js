@@ -12,11 +12,9 @@ const port = process.env.PORT || 3000;
 
 // Automatically parse json into an object.
 app.use(express.json());
-
 // Tell express app to use the user router.
 app.use(userRouter);
-
-// Tell express app to user the task router.
+// Tell express app to use the task router.
 app.use(taskRouter);
 
 app.listen(port, () => {
