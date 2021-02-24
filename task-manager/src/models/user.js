@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -39,10 +40,28 @@ const userSchema = new mongoose.Schema({
                 throw new Error('Age must be a positive number');
             }
         }
-    }
+    },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 });
 
-// Function to find user by email and password.
+// Method accessible on the instance of a user model.
+userSchema.methods.generateAuthToken = async function () {
+    const user = this;
+    const token = jwt.sign({ _id: user._id.toString() }, 'thisismynewcourse');
+
+    // Save authentication token to user.
+    user.tokens = user.tokens.concat({ token: token });
+    await user.save();
+
+    return token;
+};
+
+// Function to find user by email and password. Accessible on the user model.
 userSchema.statics.findByCredentials = async (email, password) => {
     // Get user by email.
     const user = await User.findOne({ email: email });
