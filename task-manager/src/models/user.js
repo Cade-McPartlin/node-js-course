@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true,
         required: true,
         trim: true,
         lowercase: true,
@@ -41,7 +42,26 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-// hash password before it is saved to the database.
+// Function to find user by email and password.
+userSchema.statics.findByCredentials = async (email, password) => {
+    // Get user by email.
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+        throw new Error('Unable to login');
+    }
+
+    // Compare plain text password with stored hash.
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        throw new Error('Unable to login');
+    }
+
+    return user;
+};
+
+// Hash password before it is saved to the database.
 userSchema.pre('save', async function (next) {
     const user = this;
 
