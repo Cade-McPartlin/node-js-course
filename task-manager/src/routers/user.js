@@ -64,25 +64,8 @@ router.get('/users/me', auth, async (req, res) => {
     res.send(req.user);
 });
 
-// Endpoint to get user by id.
-router.get('/users/:id', async (req, res) => {
-    const _id = req.params.id;
-
-    try {
-        const user = await User.findById(_id);
-        if (!user) {
-            return res.status(404).send();
-        }
-
-        res.send(user);
-    } catch (e) {
-        res.status(500).send(e);
-    }
-});
-
-// Endpoint to update user by id.
-router.patch('/users/:id', async (req, res) => {
-
+// Endpoint to update user.
+router.patch('/users/me', auth, async (req, res) => {
     // Get properties from object in request body.
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name', 'email', 'password', 'age'];
@@ -96,36 +79,27 @@ router.patch('/users/:id', async (req, res) => {
     }
 
     try {
-        const user = await User.findById(req.params.id);
-
         // Update fields on user with values passed in req.body.
         updates.forEach((update) => {
-           user[update] = req.body[update];
+           req.user[update] = req.body[update];
         });
 
-        await user.save();
+        await req.user.save();
 
-        if (!user) {
-            return res.status(404).send();
-        }
-
-        res.send(user);
+        res.send(req.user);
     } catch (e) {
         res.status(400).send(e);
     }
 });
 
-// Endpoint to delete user by id.
-router.delete('/users/:id', async (req, res) => {
-
+// Endpoint to delete user.
+router.delete('/users/me', auth, async (req, res) => {
     try {
-        const user = await User.findByIdAndDelete(req.params.id);
+        // User is on the request parameter in the auth middleware function.
+        // Delete user.
+        await req.user.remove();
 
-        if (!user) {
-            return res.status(404).send();
-        }
-
-        res.send(user);
+        res.send(req.user);
     } catch (e) {
         res.status(500).send(e);
     }
