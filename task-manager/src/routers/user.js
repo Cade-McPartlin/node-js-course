@@ -1,6 +1,7 @@
 const express = require('express');
 const router = new express.Router();
 const User = require('../models/user');
+const auth = require('../middleware/auth');
 
 // Endpoint to save new users to the MongoDB database.
 router.post('/users', async (req, res) => {
@@ -29,14 +30,10 @@ router.post('/users/login', async (req, res) => {
     }
 });
 
-// Endpoint to get all users.
-router.get('/users', async (req, res) => {
-    try {
-        const users = await User.find({});
-        res.send(users);
-    } catch (e) {
-        res.status(500).send(e);
-    }
+// Endpoint to get all users. Pass auth middleware to route.
+router.get('/users/me', auth, async (req, res) => {
+    // Send the authenticated user back their user.
+    res.send(req.user);
 });
 
 // Endpoint to get user by id.
