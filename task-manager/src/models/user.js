@@ -61,6 +61,17 @@ userSchema.methods.generateAuthToken = async function () {
     return token;
 };
 
+// Limit what is sent back to the user.
+userSchema.methods.toJSON = function () {
+    const user = this;
+    const userObject = user.toObject();
+
+    delete userObject.password;
+    delete userObject.tokens;
+
+    return userObject;
+};
+
 // Function to find user by email and password. Accessible on the user model.
 userSchema.statics.findByCredentials = async (email, password) => {
     // Get user by email.
