@@ -19,6 +19,8 @@ const auth = async (req, res, next) => {
 
         // Add user to request so we don't need to fetch it from the database again in our route.
         req.user = user;
+        // Add token to request.
+        req.token = token;
 
         // Call the next method to tell express we are done with the middleware function.
         next();
