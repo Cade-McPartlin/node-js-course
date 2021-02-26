@@ -49,13 +49,23 @@ const userSchema = new mongoose.Schema({
     }]
 });
 
+// Virtual field. Not stored in the database.
+userSchema.virtual('tasks', {
+    // Name of model that this field is referencing.
+    ref: 'Task',
+    // Name of field on this model
+    localField: '_id',
+    // Name of field on other model
+    foreignField: 'owner'
+});
+
 // Method accessible on the instance of a user model.
 userSchema.methods.generateAuthToken = async function () {
     const user = this;
-    const token = jwt.sign({ _id: user._id.toString() }, 'thisismynewcourse');
+    const token = jwt.sign({_id: user._id.toString()}, 'thisismynewcourse');
 
     // Save authentication token to user.
-    user.tokens = user.tokens.concat({ token: token });
+    user.tokens = user.tokens.concat({token: token});
     await user.save();
 
     return token;
@@ -75,7 +85,7 @@ userSchema.methods.toJSON = function () {
 // Function to find user by email and password. Accessible on the user model.
 userSchema.statics.findByCredentials = async (email, password) => {
     // Get user by email.
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({email: email});
 
     if (!user) {
         throw new Error('Unable to login');

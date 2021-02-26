@@ -10,6 +10,12 @@ const Task = mongoose.model('Task', {
     completed: {
         type: Boolean,
         default: false
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        // add a reference field to the User mongoose model.
+        ref: 'User'
     }
 });
 
