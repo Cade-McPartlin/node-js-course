@@ -22,20 +22,25 @@ router.post('/tasks', auth, async (req, res) => {
 // Endpoint to get all tasks. Optional query strings for filtering.
 router.get('/tasks', auth, async (req, res) => {
 
-    // Only get tasks that the user created.
-    const queryFilter = {
-        owner: req.user._id
-    };
+    const match = {};
 
     // add completed filter if provided in query string.
     if (req.query.completed) {
         // if completed === string 'true' set completed to boolean true.
-        queryFilter.completed = req.query.completed === 'true';
+        match.completed = req.query.completed === 'true';
     }
 
     try {
-        const tasks = await Task.find( queryFilter );
-        res.send(tasks);
+        await req.user.populate({
+            path: 'tasks',
+            match,
+            options: {
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip)
+            }
+        }).execPopulate();
+
+        res.send(req.user.tasks);
     } catch (e) {
         res.status(500).send(e);
     }
