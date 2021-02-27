@@ -20,9 +20,13 @@ router.post('/tasks', auth, async (req, res) => {
 });
 
 // Endpoint to get all tasks. Optional query strings for filtering.
+// GET /tasks?completed=true
+// GET /tasks?limit=10&skip=20
+// GET /tasks?sortBy=createdAt:asc
 router.get('/tasks', auth, async (req, res) => {
 
     const match = {};
+    const sort = {};
 
     // add completed filter if provided in query string.
     if (req.query.completed) {
@@ -30,13 +34,19 @@ router.get('/tasks', auth, async (req, res) => {
         match.completed = req.query.completed === 'true';
     }
 
+    if (req.query.sortBy) {
+        const parts = req.query.sortBy.split(':');
+        sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
+    }
+
     try {
         await req.user.populate({
             path: 'tasks',
-            match,
+            match: match,
             options: {
                 limit: parseInt(req.query.limit),
-                skip: parseInt(req.query.skip)
+                skip: parseInt(req.query.skip),
+                sort: sort
             }
         }).execPopulate();
 
