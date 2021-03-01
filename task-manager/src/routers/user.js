@@ -108,10 +108,26 @@ router.delete('/users/me', auth, async (req, res) => {
 
 // Endpoint for uploading an avatar image for the user.
 const upload = multer({
-    dest: 'avatars'
+    dest: 'avatars',
+    limits: {
+        // file size in bytes
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        // Only accept image files.
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+            return cb(new Error('Please upload an image'));
+        }
+        // Accept the file upload.
+        cb(undefined, true);
+    }
 });
+
 router.post('/users/me/avatar', upload.single('avatar'), (req, res) => {
    res.send();
+}, (error, req, res, next) => {
+    // callback function to handle errors.
+    res.status(400).send({error: error.message });
 });
 
 module.exports = router;
