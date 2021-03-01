@@ -47,7 +47,12 @@ const userSchema = new mongoose.Schema({
             type: String,
             required: true
         }
-    }]
+    }],
+    // Field for profile picture.
+    avatar: {
+        type: Buffer
+    }
+
 }, {
     timestamps: true
 });

@@ -13,7 +13,7 @@ router.post('/users', async (req, res) => {
 
         const token = await user.generateAuthToken();
 
-        res.status(201).send({ user: user, token: token });
+        res.status(201).send({user: user, token: token});
     } catch (e) {
         res.status(400).send(e);
     }
@@ -25,7 +25,7 @@ router.post('/users/login', async (req, res) => {
         const user = await User.findByCredentials(req.body.email, req.body.password);
 
         const token = await user.generateAuthToken();
-        res.send({ user: user, token: token });
+        res.send({user: user, token: token});
     } catch (e) {
         res.status(400).send();
     }
@@ -48,15 +48,15 @@ router.post('/users/logout', auth, async (req, res) => {
 
 // Endpoint to logout a user from all of their sessions.
 router.post('/users/logoutAll', auth, async (req, res) => {
-   try {
-       req.user.tokens = [];
+    try {
+        req.user.tokens = [];
 
-       await req.user.save();
+        await req.user.save();
 
-       res.send();
-   }  catch (e) {
-       res.status(500).send(e);
-   }
+        res.send();
+    } catch (e) {
+        res.status(500).send(e);
+    }
 });
 
 // Endpoint to get all users. Pass auth middleware to route.
@@ -76,13 +76,13 @@ router.patch('/users/me', auth, async (req, res) => {
     });
 
     if (!isValidOperation) {
-        return res.status(400).send({ error: 'Invalid updates.' });
+        return res.status(400).send({error: 'Invalid updates.'});
     }
 
     try {
         // Update fields on user with values passed in req.body.
         updates.forEach((update) => {
-           req.user[update] = req.body[update];
+            req.user[update] = req.body[update];
         });
 
         await req.user.save();
@@ -108,7 +108,6 @@ router.delete('/users/me', auth, async (req, res) => {
 
 // Endpoint for uploading an avatar image for the user.
 const upload = multer({
-    dest: 'avatars',
     limits: {
         // file size in bytes
         fileSize: 1000000
@@ -123,11 +122,25 @@ const upload = multer({
     }
 });
 
-router.post('/users/me/avatar', upload.single('avatar'), (req, res) => {
-   res.send();
+// Endpoint for saving an avatar image to a user.
+router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
+    // save image on user.
+    req.user.avatar = req.file.buffer;
+    await req.user.save();
+
+    res.send();
 }, (error, req, res, next) => {
     // callback function to handle errors.
-    res.status(400).send({error: error.message });
+    res.status(400).send({error: error.message});
+});
+
+// Endpoint for deleting an avatar image on a user.
+router.delete('/users/me/avatar', auth, async (req, res) => {
+    // Delete avatar image off of user.
+    req.user.avatar = undefined;
+    await req.user.save();
+
+    res.send();
 });
 
 module.exports = router;
