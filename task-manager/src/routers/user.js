@@ -1,8 +1,10 @@
 const express = require('express');
+const multer = require('multer');
+const sharp = require('sharp');
 const router = new express.Router();
 const User = require('../models/user');
 const auth = require('../middleware/auth');
-const multer = require('multer');
+
 
 // Endpoint to save new users to the MongoDB database.
 router.post('/users', async (req, res) => {
@@ -124,8 +126,9 @@ const upload = multer({
 
 // Endpoint for saving an avatar image to a user.
 router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
-    // save image on user.
-    req.user.avatar = req.file.buffer;
+    // save image on user as a png.
+    const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
+    req.user.avatar = buffer;
     await req.user.save();
 
     res.send();
@@ -141,6 +144,23 @@ router.delete('/users/me/avatar', auth, async (req, res) => {
     await req.user.save();
 
     res.send();
+});
+
+// Endpoint for returning a user's avatar image.
+router.get('/users/:id/avatar', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user || !user.avatar) {
+            throw new Error();
+        }
+
+        res.set('Content-Type', 'image/png');
+        res.send(user.avatar);
+
+    } catch (e) {
+        res.status(404).send();
+    }
 });
 
 module.exports = router;
