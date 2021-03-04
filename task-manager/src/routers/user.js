@@ -4,6 +4,7 @@ const sharp = require('sharp');
 const router = new express.Router();
 const User = require('../models/user');
 const auth = require('../middleware/auth');
+const { sendWelcomeEmail, sendCancellationEmail } = require('../emails/account');
 
 
 // Endpoint to save new users to the MongoDB database.
@@ -12,6 +13,7 @@ router.post('/users', async (req, res) => {
 
     try {
         await user.save();
+        sendWelcomeEmail(user.email, user.name);
 
         const token = await user.generateAuthToken();
 
@@ -101,6 +103,7 @@ router.delete('/users/me', auth, async (req, res) => {
         // User is on the request parameter in the auth middleware function.
         // Delete user.
         await req.user.remove();
+        sendCancellationEmail(req.user.email, req.user.name);
 
         res.send(req.user);
     } catch (e) {
